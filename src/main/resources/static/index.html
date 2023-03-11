@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Livraria</title>
+</head>
+<body>
+	<h1>LISTA DE ENDPOINTS DA API</h1>
+	<ul>
+	<li>
+		Adicionar livro - POST - api/livros
+	</li>
+		<li>
+			Buscar livro - GET -  api/livros/{id}
+		</li>
+		<li>
+			Listar livros - GET -api/livros
+		</li>
+		<li>
+			Remover livros - DELETE - api/livros/{id}
+		</li>
+	</ul>
+
+	<h2> Tentativa de criar uma interface, mas não consegui resolver o erro de CORS</h2>
+	<!-- Formulário para adicionar novo livro -->
+	<h3>Adicionar novo livro</h3>
+	<form id="add-book-form">
+		<label for="title">Título:</label>
+		<input type="text" id="title" name="title">
+		<br>
+		<label for="author">Autor:</label>
+		<input type="text" id="author" name="author">
+		<br>
+        <label for="author">Ano:</label>
+		<input type="text" id="ano" name="author">
+		<br>
+		<button type="submit">Adicionar</button>
+	</form>
+	
+	<!-- Lista de livros -->
+	<h3>Lista de livros</h3>
+	<ul id="book-list">
+		<!-- A lista será preenchida via JavaScript -->
+	</ul>
+	
+	<script>
+		// Função para carregar a lista de livros ao carregar a página
+		window.onload = function() {
+			loadBookList();
+			document.getElementById("add-book-form").addEventListener("submit", addBook);
+		}
+		
+		// Função para carregar a lista de livros
+		function loadBookList() {
+			fetch("http://localhost:8080/api/livros")
+				.then(response => response.json())
+				.then(data => {
+					const bookList = document.getElementById("book-list");
+					bookList.innerHTML = "";
+					data.forEach(book => {
+						const li = document.createElement("li");
+						li.innerText = `${book.title} - ${book.author}`;
+						bookList.appendChild(li);
+					});
+				});
+		}
+		
+		// Função para adicionar um livro
+		function addBook(event) {
+			event.preventDefault();
+			const title = document.getElementById("title").value;
+			const author = document.getElementById("author").value;
+			fetch("/api/books", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ title: title, author: author })
+			})
+			.then(response => {
+				if (response.ok) {
+					loadBookList();
+				} else {
+					alert("Erro ao adicionar livro");
+				}
+			});
+		}
+	</script>
+</body>
+</html>
